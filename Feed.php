@@ -207,9 +207,15 @@ class Feed extends DOMDocument
         return $this;
     }
 
-    public function addItemElement($element, $value, $attr = array())
+    public function addItemElement($element, $value, $attr = array(), $cdata = false)
     {
-        $element = $this->createElement($element, $this->normalizeString($value));
+        if ($cdata) {
+            $element = $this->createElement($element);
+            $cdataElement = $this->createCDATASection($value);
+            $element->appendChild($cdataElement);
+        } else {
+            $element = $this->createElement($element, $this->normalizeString($value));
+        }
         foreach ($attr as $key => $value) {
             $element->setAttribute($key, $this->normalizeString($value));
         }
@@ -245,9 +251,9 @@ class Feed extends DOMDocument
         return $this->addItemElement('link', $value);
     }
 
-    public function addItemDescription($value)
+    public function addItemDescription($value, $cdata = false)
     {
-        return $this->addItemElement('description', $value);
+        return $this->addItemElement('description', $value, [], $cdata);
     }
 
     public function addItemAuthor($value)
